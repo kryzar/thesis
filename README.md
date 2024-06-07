@@ -2,7 +2,7 @@
 
 ## SageMath
 
-### Run SageMath from the already built Docker hub image
+### Run SageMath from the already built Docker Hub image
 
 The docker image associated to [the Dockerfile](Dockerfile) has already been built, and was pushed to [the Docker Hub](https://hub.docker.com/repository/docker/kryzar/thesis-sagemath). It can directly be used. First of all, *pull* the image:
 
@@ -49,7 +49,7 @@ Once the image is built, run it with `docker run`; the following opens a SageMat
 docker run --rm --interactive kryzar/thesis-sagemath /sage/sage
 ```
 
-Optionally, to push the image to the Docker hub, run:
+Optionally, to push the image to the Docker Hub, run:
 
 ```bash
 docker tag leudiere-thesis-sagemath:latest kryzar/thesis-sagemath:latest
