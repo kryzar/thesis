@@ -4,10 +4,7 @@
 
 ### Run SageMath from the already built Docker hub image
 
-The docker image associated to [the Dockerfile](Dockerfile) has already been
-built, and was pushed to [the Docker
-Hub](https://hub.docker.com/repository/docker/kryzar/thesis-sagemath). It can
-directly be used. First of all, *pull* the image:
+The docker image associated to [the Dockerfile](Dockerfile) has already been built, and was pushed to [the Docker Hub](https://hub.docker.com/repository/docker/kryzar/thesis-sagemath). It can directly be used. First of all, *pull* the image:
 
 ```bash
 docker pull kryzar/thesis-sagemath
@@ -19,9 +16,7 @@ To run it:
 docker run --rm --interactive kryzar/thesis-sagemath /sage/sage
 ```
 
-### Build your own image
-
-#### Build the Docker image
+### Run your own Docker image
 
 To build the Docker image associated to [the Dockerfile](Dockerfile), clone
 the repository:
@@ -32,13 +27,13 @@ git clone https://github.com/kryzar/thesis
 
 then go to the newly created directory (which contains the Dockerfile):
 
-```
+```bash
 cd thesis
 ```
 
 and build the image using `docker build` (the name `leudiere-thesis-sagemath` can be freely changed):
 
-```
+```bash
 docker build -t leudiere-thesis-sagemath .
 ```
 
@@ -49,36 +44,24 @@ docker build -t leudiere-thesis-sagemath .
 > performances. The extension must be installed; on Debian and Ubuntu, use
 > `sudo apt install docker-buildx`.
 
-#### Run Sage via the Docker image
-
 Once the image is built, run it with `docker run`; the following opens a
 SageMath shell:
-```
+
+```bash
 docker run --rm --interactive kryzar/thesis-sagemath /sage/sage
 ```
 
-#### (Note to self) Push the Docker image to Docker Hub
-
-TODO
+TODO: Push to the docker hub
 
 ### Manually build SageMath on your computer
 
-One can avoid using Docker and manually build SageMath from source. The
-compilation instructions can be found
-[here](https://doc.sagemath.org/html/en/installation/source.html) and
-[here](https://github.com/sagemath/sage/?tab=readme-ov-file#instructions-to-build-from-source). We also mention that the [SageMath Developer Guide](https://doc.sagemath.org/html/en/developer/index.html) is valuable learning resource.
+One can avoid using Docker and manually build SageMath from source. The compilation instructions can be found [here](https://doc.sagemath.org/html/en/installation/source.html) and [here](https://github.com/sagemath/sage/?tab=readme-ov-file#instructions-to-build-from-source). We also mention that the [SageMath Developer Guide](https://doc.sagemath.org/html/en/developer/index.html) is valuable learning resource.
 
 > [!IMPORTANT]
-> Be sure to have all the dependencies installed. Their list for each platform
-> (Linux, macOS, Windows) is available
-> [here](https://github.com/sagemath/sage/?tab=readme-ov-file#instructions-to-build-from-source). However, we stress that those prerequisites are heavy and numerous. In order to keep the userspace clean, using Docker could be recommended.
+> Be sure to have all the dependencies installed. Their list for each platform (Linux, macOS, Windows) is available [here](https://github.com/sagemath/sage/?tab=readme-ov-file#instructions-to-build-from-source). However, we stress that those prerequisites are heavy and numerous. In order to keep the userspace clean, using Docker could be recommended.
 
 > [!IMPORTANT]
-> Be sure to use [the branch `thesis` of
-> kryzar/sagemath`](https://github.com/kryzar/sage/tree/thesis-snippets) and
-> not [the branch `develop` of
-> `sagemath/sage`](https://github.com/sagemath/sage) (default branch to build
-> SageMath).
+> Be sure to use [the branch `thesis` of kryzar/sagemath`](https://github.com/kryzar/sage/tree/thesis-snippets) and not [the branch `develop` of `sagemath/sage`](https://github.com/sagemath/sage) (default branch to build SageMath).
 
 Roughly, the sequence of commands is the following:
 
@@ -98,7 +81,7 @@ make
 
 Once this has finished, run
 
-```
+```bash
 ./sage
 ```
 
