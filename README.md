@@ -41,7 +41,7 @@ docker build -t leudiere-thesis-sagemath .
 ```
 
 > [!NOTE]
-> It is possible to build the image with `docker-buildx`, [an extension of Docker](https://docs.docker.com/reference/cli/docker/buildx/) running `docker buildx build -t leudiere-thesis-sagemath .`. This may offer better performances. The extension must be installed; on Debian and Ubuntu, use `sudo apt install docker-buildx`.
+> It is possible to build the image with `docker-buildx`, [an extension of Docker](https://docs.docker.com/reference/cli/docker/buildx/), running `docker buildx build -t leudiere-thesis-sagemath .`. This may offer better performances. The extension must be installed; on Debian and Ubuntu, use `sudo apt install docker-buildx`.
 
 Once the image is built, run it with `docker run`; the following opens a SageMath shell:
 
