@@ -16,6 +16,9 @@ To run it:
 docker run --rm --interactive kryzar/thesis-sagemath /sage/sage
 ```
 
+> [!WARNING]
+> The image is about 10 GB in size.
+
 ### Run your own Docker image
 
 To build the Docker image associated to [the Dockerfile](Dockerfile), clone
@@ -51,7 +54,13 @@ SageMath shell:
 docker run --rm --interactive kryzar/thesis-sagemath /sage/sage
 ```
 
-TODO: Push to the docker hub
+Optionally, to push the image to the Docker hub, run:
+
+```bash
+docker tag leudiere-thesis-sagemath:latest kryzar/thesis-sagemath:latest
+docker login -u kryzar  # Will prompt for a password; use an access token
+docker push kryzar/thesis-sagemath:latest
+```
 
 ### Manually build SageMath on your computer
 
