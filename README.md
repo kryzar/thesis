@@ -13,7 +13,7 @@ docker pull kryzar/thesis-sagemath
 To run it:
 
 ```bash
-docker run --rm --interactive kryzar/thesis-sagemath /sage/sage
+docker run --rm --interactive kryzar/thesis-sagemath
 ```
 
 > [!WARNING]
@@ -46,7 +46,7 @@ docker build -t leudiere-thesis-sagemath .
 Once the image is built, run it with `docker run`; the following opens a SageMath shell:
 
 ```bash
-docker run --rm --interactive kryzar/thesis-sagemath /sage/sage
+docker run --rm --interactive kryzar/thesis-sagemath
 ```
 
 Optionally, to push the image to the Docker Hub, run:
