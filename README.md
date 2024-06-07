@@ -80,7 +80,7 @@ cd sage
 make configure
 env
 ./configure
-make
+make -j64 V=0  # Parallelize on 64 processors, with reduced verbosity
 ```
 
 Once this has finished, run
@@ -90,9 +90,4 @@ Once this has finished, run
 ```
 
 > [!TIP]
-> As per [the installation guide](https://github.com/sagemath/sage), we highly
-> recommend parallelizing the build process. This can be achieved by running
-> `make -jN` (where `N` is the number of processors); for example, `make -j64`
-> builds on 64 parallel processors, while `make -j8` builds on 8 parallels
-> processors. It is also possible to build the sole `sage` executable, without
-> the documentation. For this, replace `make` by `make build`.
+> As per [the installation guide](https://github.com/sagemath/sage), we highly recommend parallelizing the build process. This can be achieved by running `make -jN` (where `N` is the number of processors); for example, `make -j64` builds on 64 parallel processors, while `make -j8` builds on 8 parallels processors.
