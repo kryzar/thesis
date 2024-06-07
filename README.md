@@ -21,7 +21,7 @@ docker run --rm --interactive kryzar/thesis-sagemath /sage/sage
 To build the Docker image associated to [the Dockerfile](Dockerfile), clone
 the repository:
 
-```
+```bash
 git clone https://github.com/kryzar/thesis
 ```
 
