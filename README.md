@@ -75,7 +75,7 @@ Roughly, the sequence of commands is the following:
 ```bash
 git clone -c core.symlinks=true --filter blob:none \
           --origin upstream --branch thesis --tags \
-          https://github.com/kryzar/sage.git /sage
+          https://github.com/kryzar/sage.git sage
 cd sage
 make configure
 ./configure
