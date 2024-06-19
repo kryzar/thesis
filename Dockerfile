@@ -4,7 +4,7 @@ FROM sagemath/sagemath-dev:develop
 #     https://github.com/sagemath/sage/?tab=readme-ov-file#instructions-to-build-from-source
 
 RUN sudo git clone -c core.symlinks=true --filter blob:none \
-                   --origin upstream --branch thesis --tags \
+                   --origin oritin --branch thesis --tags   \
                    https://github.com/kryzar/sage.git /sage
 
 WORKDIR /sage
