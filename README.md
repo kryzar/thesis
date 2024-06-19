@@ -82,7 +82,7 @@ make configure
 make -j64 V=0  # Parallelize on 64 processors, with reduced verbosity
 ```
 
-Once this has finished, run
+Once this has finished, run:
 
 ```bash
 ./sage
