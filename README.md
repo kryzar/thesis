@@ -79,7 +79,7 @@ git clone -c core.symlinks=true --filter blob:none \
 cd sage
 make configure
 ./configure
-make build -j64 V=0  # Parallelize on 64 processors, with reduced verbosity
+make build -j64  # Parallelize on 64 processors
 ```
 Once this has finished, run:
 
