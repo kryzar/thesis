@@ -79,9 +79,8 @@ git clone -c core.symlinks=true --filter blob:none \
 cd sage
 make configure
 ./configure
-make -j64 V=0  # Parallelize on 64 processors, with reduced verbosity
+make build -j64 V=0  # Parallelize on 64 processors, with reduced verbosity
 ```
-
 Once this has finished, run:
 
 ```bash
@@ -89,4 +88,4 @@ Once this has finished, run:
 ```
 
 > [!TIP]
-> As per [the installation guide](https://github.com/sagemath/sage), we highly recommend parallelizing the build process. This can be achieved by running `make -jN` (where `N` is the number of processors); for example, `make -j64` builds on 64 parallel processors, while `make -j8` builds on 8 parallels processors.
+> As per [the installation guide](https://github.com/sagemath/sage), we highly recommend parallelizing the build process. This can be achieved by running `make build -jN` (where `N` is the number of processors); for example, `make build -j64` builds on 64 parallel processors, while `make build -j8` builds on 8 parallels processors.
