@@ -1,4 +1,6 @@
+from datetime import datetime
 from time import time
+from statistics import median
 import logging
 
 logging.basicConfig(format='%(asctime)s: %(message)s', level=logging.INFO)
@@ -11,7 +13,7 @@ DEFAULT_EXTENSION_DEGREE = 15
 DEFAULT_RANK             = 10
 DEFAULT_TAU_DEGREE       = 10
 
-NUMBER_SAMPLES = 10
+NUMBER_SAMPLES = 20
 
 
 def time_callable(callable):
@@ -38,12 +40,6 @@ def find_isogenous(phi):
             pass
 
 
-def dict_to_file(filename, dict_):
-    with open(filename, 'w') as f:
-        for key, value in dict_.items():
-            f.write(f'{key}    {value}\n')
-
-
 def non_zero_isogeny(phi, psi, n):
     while True:
         morphism = Hom(phi, psi).random_element(n)
@@ -57,24 +53,27 @@ def bench_tau_degree(filename):
     K.<z> = Fq.extension(d)
     category = DrinfeldModule(A, [z, 1]).category()
     # Get computation times
-    computation_times = dict()
-    for n in ISOGENY_TAU_DEGREES:
-        phi = category.random_object(r)
-        psi = find_isogenous(phi)
-        computation_time = 0
-        for sample in range(NUMBER_SAMPLES):
-            logging.warning(f'n={n}, sample {sample+1}/{NUMBER_SAMPLES}')
-            isogeny = non_zero_isogeny(phi, psi, n)
-            computation_time += time_callable(isogeny.norm)
-        computation_time /= NUMBER_SAMPLES
-        logging.info(f'computation time: {computation_time}')
-        computation_times[n] = computation_time
-    # Write them to a file
-    dict_to_file(filename, computation_times)
+    with open(filename, 'w') as f:
+        for n in ISOGENY_TAU_DEGREES:
+            phi = category.random_object(r)
+            psi = find_isogenous(phi)
+            samples = []
+            for sample_number in range(NUMBER_SAMPLES):
+                logging.warning(f'n={n}, sample {sample_number+1}/{NUMBER_SAMPLES}')
+                isogeny = non_zero_isogeny(phi, psi, n)
+                samples.append(time_callable(isogeny.norm))
+            # Process samples
+            median_comptime = median(samples)
+            logging.info(f'median comptime: {median_comptime}')
+            # Write them to a file
+            f.write(f'{n}    {median_comptime}\n')
 
 
 if __name__ == '__main__':
 
     Fq = GF(5)
     A.<T> = Fq[]
-    bench_tau_degree('/users/ahugoune/workshop/benchmarks/norm_charpoly-tau_degree.txt')
+    filename = '/users/ahugoune/workshop/benchmarks/norm_charpoly-tau_degree.' \
+               + datetime.now().strftime('%Y-%m-%dT%H:%M:%S%Z') \
+               + '.txt'
+    bench_tau_degree(filename)
