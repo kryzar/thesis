@@ -4,14 +4,15 @@ from statistics import median
 import logging
 
 logging.basicConfig(format='%(asctime)s: %(message)s', level=logging.INFO)
+set_random_seed(4808)
 
 EXTENSION_DEGREES   = [2, 3, 5, 10, 20, 30, 50, 100]
 ISOGENY_TAU_DEGREES = [2, 3, 5, 10, 20, 30, 50, 100] 
 RANKS               = [2, 3, 5, 10, 20, 30, 50, 100]
 
-DEFAULT_EXTENSION_DEGREE = 15
-DEFAULT_RANK             = 10
-DEFAULT_TAU_DEGREE       = 10
+DEFAULT_EXTENSION_DEGREE   = 15
+DEFAULT_RANK               = 10
+DEFAULT_ISOGENY_TAU_DEGREE = 10
 
 NUMBER_SAMPLES = 20
 
@@ -69,11 +70,56 @@ def bench_tau_degree(filename):
             f.write(f'{n}    {median_comptime}\n')
 
 
+def bench_rank(filename):
+    n = DEFAULT_ISOGENY_TAU_DEGREE
+    d = DEFAULT_EXTENSION_DEGREE
+    K.<z> = Fq.extension(d)
+    category = DrinfeldModule(A, [z, 1]).category()
+    # Get computation times
+    with open(filename, 'w') as f:
+        for r in RANKS:
+            phi = category.random_object(r)
+            psi = find_isogenous(phi)
+            samples = []
+            for sample_number in range(NUMBER_SAMPLES):
+                logging.warning(f'n={n}, sample {sample_number+1}/{NUMBER_SAMPLES}')
+                isogeny = non_zero_isogeny(phi, psi, n)
+                samples.append(time_callable(isogeny.norm))
+            # Process samples
+            median_comptime = median(samples)
+            logging.info(f'median comptime: {median_comptime}')
+            # Write them to a file
+            f.write(f'{r}    {median_comptime}\n')
+
+
+def bench_extension_degree(filename):
+    n = DEFAULT_ISOGENY_TAU_DEGREE
+    r = DEFAULT_RANK
+    # Get computation times
+    with open(filename, 'w') as f:
+        for d in EXTENSION_DEGREES:
+            K.<z> = Fq.extension(d)
+            category = DrinfeldModule(A, [z, 1]).category()
+            phi = category.random_object(r)
+            psi = find_isogenous(phi)
+            samples = []
+            for sample_number in range(NUMBER_SAMPLES):
+                logging.warning(f'd={d}, sample {sample_number+1}/{NUMBER_SAMPLES}')
+                isogeny = non_zero_isogeny(phi, psi, n)
+                samples.append(time_callable(isogeny.norm))
+            # Process samples
+            median_comptime = median(samples)
+            logging.info(f'median comptime: {median_comptime}')
+            # Write them to a file
+            f.write(f'{r}    {median_comptime}\n')
+
+
 if __name__ == '__main__':
 
     Fq = GF(5)
     A.<T> = Fq[]
-    filename = '/users/ahugoune/workshop/benchmarks/norm_charpoly-tau_degree.' \
-               + datetime.now().strftime('%Y-%m-%dT%H:%M:%S%Z') \
-               + '.txt'
-    bench_tau_degree(filename)
+    workdir = '/users/ahugoune/workshop/benchmarks'
+    date = datetime.now().strftime('%Y-%m-%dT%H:%M:%S%Z')
+    bench_tau_degree(      f'{workdir}/{date}.norm_charpoly-tau_degree.txt')
+    bench_rank(            f'{workdir}/{date}.norm_charpoly-rank.txt')
+    bench_extension_degree(f'{workdir}/{date}.norm_charpoly-extension_degree.txt')
