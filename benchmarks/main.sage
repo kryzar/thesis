@@ -9,15 +9,23 @@ logging.basicConfig(format="[%(asctime)s:%(funcName)s()] %(message)s",
 
 set_random_seed(4808)
 
-EXTENSION_DEGREES = [2, 5, 10, 50, 100, 500, 1000]
-TAU_DEGREES       = [2, 5, 10, 50, 100, 500, 1000] 
-RANKS             = [2, 5, 10, 50, 100, 500, 1000]
+# EXTENSION_DEGREES = [2, 3, 10, 50, 100, 500, 1000]
+# TAU_DEGREES       = [2, 3, 10, 50, 100, 500, 1000] 
+# RANKS             = [2, 3, 10, 50, 100, 500, 1000]
+
+# DEFAULT_EXTENSION_DEGREE   = 15
+# DEFAULT_RANK               = 10
+# DEFAULT_ISOGENY_TAU_DEGREE = 10
+
+EXTENSION_DEGREES = [2]
+TAU_DEGREES       = [2] 
+RANKS             = [2]
 
 DEFAULT_EXTENSION_DEGREE   = 15
 DEFAULT_RANK               = 10
 DEFAULT_ISOGENY_TAU_DEGREE = 10
 
-NUMBER_SAMPLES = 10
+NUMBER_SAMPLES = 1
 
 
 ############################
@@ -92,30 +100,45 @@ def find_isogeny(phi, n):
 ##########################
 
 
-def get_samples(f, phi, n, r, d, norm_or_charpoly):
-    samples = []
+def get_samples(f, phi, n, r, d, is_isogeny):
+    iso_or_endo = 'isogeny' if is_isogeny else 'endomorphism'
     # Get samples
+    samples = []
     for sample_number in range(NUMBER_SAMPLES):
         logging.info(f'(n, r, d) = ({n}, {r}, {d})')
-        logging.info('sample {sample_number+1} out of {NUMBER_SAMPLES}')
-        match norm_or_charpoly:
-            case 'norm':
-                logging.info('Starting isogeny computation...')
-                isogeny = find_isogeny(phi, n)
-                logging.info('Isogeny computed.')
-                logging.info('Starting isogeny norm computation...')
-                samples.append(time_callable(isogeny.norm))
-                logging.info('Isogeny norm computed.')
-            case 'charpoly':
-                logging.info('Starting charpoly computation...')
-                endomorphism = find_charpoly(phi, n)
-                logging.info('Isogeny computed.')
-                logging.info('Starting isogeny norm computation...')
-                samples.append(time_callable(endomorphism.charpoly))
-                logging.info('Isogeny norm computed.')
+        logging.info(f'Sample {sample_number+1} out of {NUMBER_SAMPLES}')
+        logging.info(f'Starting {iso_or_endo} computation...')
+        morphism = find_isogeny(phi, n) if is_isogeny else find_endomorphism(phi, n)
+        logging.info(f'{iso_or_endo} computed.')
+        callable = morphism.norm if is_isogeny else morphism.charpoly
+        logging.info(f'Starting {iso_or_endo} {norm_or_charpoly} computation...')
+        computation_time = time_callable(callable)
+        logging.info(f'sample computation time: {computation_time}')
+        samples.append(computation_time)
+        logging.info('Isogeny norm computed.')
+
+        # match norm_or_charpoly:
+        #     case 'norm':
+        #         logging.info('Starting isogeny computation...')
+        #         isogeny = find_isogeny(phi, n)
+        #         logging.info('Isogeny computed.')
+        #         logging.info('Starting isogeny norm computation...')
+        #         computation_time = time_callable(isogeny.norm)
+        #         logging.info(f'sample computation time: {computation_time}')
+        #         samples.append(computation_time)
+        #         logging.info('Isogeny norm computed.')
+        #     case 'charpoly':
+        #         logging.info('Starting charpoly computation...')
+        #         endomorphism = find_charpoly(phi, n)
+        #         logging.info('Isogeny computed.')
+        #         logging.info('Starting isogeny norm computation...')
+        #         computation_time = time_callable(endomorphism.charpoly)
+        #         logging.info(f'sample computation time: {computation_time}')
+        #         samples.append(computation_time)
+        #         logging.info('Isogeny norm computed.')
 
 
-def bench_tau_degree(filename, norm_or_charpoly):
+def bench_tau_degree(filename, is_isogeny):
     r = DEFAULT_RANK
     d = DEFAULT_EXTENSION_DEGREE
     K.<z> = Fq.extension(d)
@@ -124,10 +147,10 @@ def bench_tau_degree(filename, norm_or_charpoly):
     with open(filename, 'w') as f:
         for n in TAU_DEGREES:
             phi = drinfeld_modules.random_object(r)
-            get_samples(f, phi, n, r, d, norm_or_charpoly)
+            get_samples(f, phi, n, r, d, is_isogeny)
 
 
-def bench_extension_degree(filename, norm_or_charpoly):
+def bench_extension_degree(filename, is_isogeny):
     r = DEFAULT_RANK
     n = DEFAULT_ISOGENY_TAU_DEGREE
     # Get computation times
@@ -136,7 +159,7 @@ def bench_extension_degree(filename, norm_or_charpoly):
             K.<z> = Fq.extension(d)
             drinfeld_modules = DrinfeldModule(A, [z, 1]).category()
             phi = drinfeld_modules.random_object(r)
-            get_samples(f, phi, n, r, d, norm_or_charpoly)
+            get_samples(f, phi, n, r, d, is_isogeny)
 
 
 def bench_rank(filename):
@@ -159,10 +182,11 @@ if __name__ == '__main__':
     # Boilerplate
     workdir = Path.home() / Path('workshop/benchmarks')
     date = datetime.now().strftime('%m-%d_%H:%M')
-    for norm_or_charpoly in ['norm', 'charpoly']:
-        bench_tau_degree(      norm_or_charpoly,
-                               f'{workdir}/{date}.{norm_or_charpoly}.tau_degree.txt')
-        bench_extension_degree(norm_or_charpoly,
-                               f'{workdir}/{date}.{norm_or_charpoly}.extension_degree.txt')
-        bench_rank(            norm_or_charpoly,
-                               f'{workdir}/{date}.{norm_or_charpoly}.rank.txt')
+
+    for bench_function in [bench_tau_degree, bench_extension_degree, bench_rank]:
+        for is_isogeny in [True, False]:
+            file = Path(f'{date}' \
+                        f'.{'isogeny' if is_isogeny else 'endomorphism'}' \
+                        f'.{bench_function.__name__}' \
+                        f'.txt'
+            bench_function(workdir / file, is_isogeny)
