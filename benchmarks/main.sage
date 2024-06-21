@@ -146,7 +146,6 @@ def bench_tau_degree(filename, is_isogeny):
             phi = drinfeld_modules.random_object(r)
             get_samples(f, phi, n, r, d, 'n', is_isogeny)
 
-
 def bench_extension_degree(filename, is_isogeny):
     r = DEFAULT_RANK
     n = DEFAULT_ISOGENY_TAU_DEGREE
