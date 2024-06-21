@@ -4,10 +4,20 @@ from time import time
 from statistics import median
 import logging
 
-logging.basicConfig(format="[%(asctime)s:%(funcName)s()] %(message)s",
-			        level=logging.INFO)
 
+################
+# BASIC CONFIG #
+################
+
+
+logging.basicConfig(format="[%(asctime)s] %(message)s", level=logging.INFO)
 set_random_seed(4808)
+
+
+#####################
+# GLOBAL PARAMETERS #
+#####################
+
 
 # EXTENSION_DEGREES = [2, 3, 10, 50, 100, 500, 1000]
 # TAU_DEGREES       = [2, 3, 10, 50, 100, 500, 1000] 
@@ -17,15 +27,15 @@ set_random_seed(4808)
 # DEFAULT_RANK               = 10
 # DEFAULT_ISOGENY_TAU_DEGREE = 10
 
-EXTENSION_DEGREES = [2]
-TAU_DEGREES       = [2] 
-RANKS             = [2]
+EXTENSION_DEGREES = [2, 3]
+TAU_DEGREES       = [2, 3] 
+RANKS             = [2, 3]
 
 DEFAULT_EXTENSION_DEGREE   = 15
 DEFAULT_RANK               = 10
 DEFAULT_ISOGENY_TAU_DEGREE = 10
 
-NUMBER_SAMPLES = 1
+NUMBER_SAMPLES = 2
 
 
 ############################
@@ -59,9 +69,7 @@ def find_endomorphism(phi, n):
         basis_5 = end_.Fq_basis(5)
         basis_6 = end_.Fq_basis(6)
         Fq = phi.function_ring().base()
-        print('Hey')
         while endomorphism.ore_polynomial().degree() < n:
-            print(endomorphism.ore_polynomial().degree())
             u = sum((Fq.random_element() * x for x in basis_4))
             v = sum((Fq.random_element() * x for x in basis_5))
             w = sum((Fq.random_element() * x for x in basis_6))
@@ -100,12 +108,14 @@ def find_isogeny(phi, n):
 ##########################
 
 
-def get_samples(f, phi, n, r, d, is_isogeny):
-    iso_or_endo = 'isogeny' if is_isogeny else 'endomorphism'
+def get_samples(f, phi, n, r, d, param, is_isogeny):
+    iso_or_endo      = 'isogeny' if is_isogeny else 'endomorphism'
+    norm_or_charpoly = 'norm'    if is_isogeny else 'charpoly'
     # Get samples
     samples = []
     for sample_number in range(NUMBER_SAMPLES):
         logging.info(f'(n, r, d) = ({n}, {r}, {d})')
+        logging.info(f'Param: {param}')
         logging.info(f'Sample {sample_number+1} out of {NUMBER_SAMPLES}')
         logging.info(f'Starting {iso_or_endo} computation...')
         morphism = find_isogeny(phi, n) if is_isogeny else find_endomorphism(phi, n)
@@ -113,30 +123,17 @@ def get_samples(f, phi, n, r, d, is_isogeny):
         callable = morphism.norm if is_isogeny else morphism.charpoly
         logging.info(f'Starting {iso_or_endo} {norm_or_charpoly} computation...')
         computation_time = time_callable(callable)
-        logging.info(f'sample computation time: {computation_time}')
         samples.append(computation_time)
-        logging.info('Isogeny norm computed.')
-
-        # match norm_or_charpoly:
-        #     case 'norm':
-        #         logging.info('Starting isogeny computation...')
-        #         isogeny = find_isogeny(phi, n)
-        #         logging.info('Isogeny computed.')
-        #         logging.info('Starting isogeny norm computation...')
-        #         computation_time = time_callable(isogeny.norm)
-        #         logging.info(f'sample computation time: {computation_time}')
-        #         samples.append(computation_time)
-        #         logging.info('Isogeny norm computed.')
-        #     case 'charpoly':
-        #         logging.info('Starting charpoly computation...')
-        #         endomorphism = find_charpoly(phi, n)
-        #         logging.info('Isogeny computed.')
-        #         logging.info('Starting isogeny norm computation...')
-        #         computation_time = time_callable(endomorphism.charpoly)
-        #         logging.info(f'sample computation time: {computation_time}')
-        #         samples.append(computation_time)
-        #         logging.info('Isogeny norm computed.')
-
+        logging.info(f'Isogeny norm computed ({computation_time}s).')
+    # Write to a file
+    match param:
+        case 'n':
+           abscissa = n
+        case 'd':
+           abscissa = d
+        case 'r':
+           abscissa = r
+    f.write(f'{abscissa} {median(samples)}\n')
 
 def bench_tau_degree(filename, is_isogeny):
     r = DEFAULT_RANK
@@ -147,7 +144,7 @@ def bench_tau_degree(filename, is_isogeny):
     with open(filename, 'w') as f:
         for n in TAU_DEGREES:
             phi = drinfeld_modules.random_object(r)
-            get_samples(f, phi, n, r, d, is_isogeny)
+            get_samples(f, phi, n, r, d, 'n', is_isogeny)
 
 
 def bench_extension_degree(filename, is_isogeny):
@@ -159,10 +156,9 @@ def bench_extension_degree(filename, is_isogeny):
             K.<z> = Fq.extension(d)
             drinfeld_modules = DrinfeldModule(A, [z, 1]).category()
             phi = drinfeld_modules.random_object(r)
-            get_samples(f, phi, n, r, d, is_isogeny)
+            get_samples(f, phi, n, r, d, 'd', is_isogeny)
 
-
-def bench_rank(filename):
+def bench_rank(filename, is_isogeny):
     n = DEFAULT_ISOGENY_TAU_DEGREE
     d = DEFAULT_EXTENSION_DEGREE
     K.<z> = Fq.extension(d)
@@ -171,22 +167,23 @@ def bench_rank(filename):
     with open(filename, 'w') as f:
         for r in RANKS:
             phi = drinfeld_modules.random_object(r)
-            get_samples(f, phi, n, r, d, norm_or_charpoly)
+            get_samples(f, phi, n, r, d, 'r', is_isogeny)
 
 
 if __name__ == '__main__':
 
-    # Math
     Fq = GF(5)
     A.<T> = Fq[]
-    # Boilerplate
-    workdir = Path.home() / Path('workshop/benchmarks')
-    date = datetime.now().strftime('%m-%d_%H:%M')
+
+    workdir = Path.home() / Path('workshop/benchmarks/tests')
+    date = datetime.now().strftime('%H:%M:%S')
 
     for bench_function in [bench_tau_degree, bench_extension_degree, bench_rank]:
         for is_isogeny in [True, False]:
+            norm_or_charpoly = 'norm' if is_isogeny else 'charpoly'
             file = Path(f'{date}' \
-                        f'.{'isogeny' if is_isogeny else 'endomorphism'}' \
+                        f'.{norm_or_charpoly}' \
                         f'.{bench_function.__name__}' \
-                        f'.txt'
+                        f'.txt')
             bench_function(workdir / file, is_isogeny)
+
