@@ -34,7 +34,7 @@ for handler in handlers:
 set_random_seed(4808)
 
 EXTENSION_DEGREES = [2, 3, 5, 10, 20, 30, 50, 100, 200, 300, 500, 1000]
-TAU_DEGREES       = [2, 3, 5, 10, 20, 30, 50, 100, 200, 300, 500, 1000] 
+TAU_DEGREES       = [2, 3, 5, 10, 20, 30, 50, 100, 200, 300, 500, 1000]
 RANKS             = [2, 3, 5, 10, 20, 30, 50, 100, 200, 300, 500, 1000]
 
 DEFAULT_EXTENSION_DEGREE   = 15
@@ -127,17 +127,17 @@ def get_samples(f, phi, n, r, d, param, is_isogeny):
     # Get samples
     samples = []
     for sample_number in range(NUMBER_SAMPLES):
-        logging.info(f'(n, r, d) = ({n}, {r}, {d})')
-        logging.info(f'Param: {param}')
-        logging.info(f'Sample: {sample_number+1}/{NUMBER_SAMPLES}')
-        logging.info(f'Starting {iso_or_endo} computation...')
+        logger.info(f'(n, r, d) = ({n}, {r}, {d})')
+        logger.info(f'Param: {param}')
+        logger.info(f'Sample: {sample_number+1}/{NUMBER_SAMPLES}')
+        logger.info(f'Starting {iso_or_endo} computation...')
         morphism = find_isogeny(phi, n) if is_isogeny else find_endomorphism(phi, n)
-        logging.info(f'{iso_or_endo} computed.')
+        logger.info(f'{iso_or_endo} computed.')
         callable = morphism.norm if is_isogeny else morphism.charpoly
-        logging.info(f'Starting {iso_or_endo} {norm_or_charpoly} computation...')
+        logger.info(f'Starting {iso_or_endo} {norm_or_charpoly} computation...')
         computation_time = time_callable(callable)
         samples.append(computation_time)
-        logging.info(f'{iso_or_endo} {norm_or_charpoly} computed ({computation_time}s).')
+        logger.info(f'{iso_or_endo} {norm_or_charpoly} computed ({computation_time}s).')
     # Write to a file
     match param:
         case 'n':
