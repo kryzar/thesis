@@ -146,12 +146,19 @@ def get_samples(f, phi, n, r, d, param, is_isogeny):
            abscissa = d
         case 'r':
            abscissa = r
-    f.write(f'{abscissa} '         \
-            f'{min(samples)} '     \
-            f'{max(samples)} '     \
-            f'{mean(samples)} '    \
-            f'{median(samples)} '  \
-            f'{stdev(samples)}\n')
+    data = f'{abscissa} '        \
+           f'{min(samples)} '    \
+           f'{max(samples)} '    \
+           f'{mean(samples)} '   \
+           f'{median(samples)} ' \
+           f'{stdev(samples)}\n'
+    logger.info(f'data: {data}')
+    f.write(data)
+            
+            
+            
+            
+            
 
 def bench_tau_degree(filename, is_isogeny):
     r = DEFAULT_RANK
