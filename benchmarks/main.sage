@@ -1,18 +1,29 @@
 from datetime import datetime
+from itertools import product
+from logging import FileHandler, Formatter, StreamHandler
 from multiprocessing import Pool
 from pathlib import Path
-from statistics import median
+from statistics import mean, median, stdev
 from time import time
-import logging
 
 
-################
-# BASIC CONFIG #
-################
+###########
+# LOGGING #
+###########
 
 
-logging.basicConfig(format="[%(asctime)s] %(message)s", level=logging.INFO)
-set_random_seed(4808)
+DATE = datetime.now().strftime('%H:%M:%S')
+WORKDIR = Path.home() / Path('workshop/benchmarks/')
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+file_handler = FileHandler(WORKDIR / Path(f'{DATE}.log'))
+console_handler = StreamHandler()
+handlers = [file_handler, console_handler]
+for handler in handlers:
+    handler.setLevel(logging.INFO)
+    handler.setFormatter(Formatter('[%(asctime)s] %(message)s'))
+    logger.addHandler(handler)
 
 
 #####################
@@ -20,11 +31,13 @@ set_random_seed(4808)
 #####################
 
 
-EXTENSION_DEGREES = [2, 3, 5, 10, 20, 30, 50, 100]
-TAU_DEGREES       = [2, 3, 5, 10, 20, 30, 50, 100] 
-RANKS             = [2, 3, 5, 10, 20, 30, 50, 100]
+set_random_seed(4808)
 
-DEFAULT_EXTENSION_DEGREE   = 2
+EXTENSION_DEGREES = [2, 3, 5, 10, 20, 30, 50, 100, 200, 300, 500, 1000]
+TAU_DEGREES       = [2, 3, 5, 10, 20, 30, 50, 100, 200, 300, 500, 1000] 
+RANKS             = [2, 3, 5, 10, 20, 30, 50, 100, 200, 300, 500, 1000]
+
+DEFAULT_EXTENSION_DEGREE   = 15
 DEFAULT_RANK               = 10
 DEFAULT_ISOGENY_TAU_DEGREE = 10
 
@@ -133,7 +146,12 @@ def get_samples(f, phi, n, r, d, param, is_isogeny):
            abscissa = d
         case 'r':
            abscissa = r
-    f.write(f'{abscissa} {median(samples)}\n')
+    f.write(f'{abscissa} '         \
+            f'{min(samples)} '     \
+            f'{max(samples)} '     \
+            f'{mean(samples)} '    \
+            f'{median(samples)} '  \
+            f'{stdev(samples)}\n')
 
 def bench_tau_degree(filename, is_isogeny):
     r = DEFAULT_RANK
@@ -142,6 +160,7 @@ def bench_tau_degree(filename, is_isogeny):
     drinfeld_modules = DrinfeldModule(A, [z, 1]).category()
     # Get computation times
     with open(filename, 'w') as f:
+        f.write('abscissa min max mean median stdev\n')
         for n in TAU_DEGREES:
             phi = drinfeld_modules.random_object(r)
             get_samples(f, phi, n, r, d, 'n', is_isogeny)
@@ -151,6 +170,7 @@ def bench_extension_degree(filename, is_isogeny):
     n = DEFAULT_ISOGENY_TAU_DEGREE
     # Get computation times
     with open(filename, 'w') as f:
+        f.write('abscissa min max mean median stdev\n')
         for d in EXTENSION_DEGREES:
             K.<z> = Fq.extension(d)
             drinfeld_modules = DrinfeldModule(A, [z, 1]).category()
@@ -164,6 +184,7 @@ def bench_rank(filename, is_isogeny):
     drinfeld_modules = DrinfeldModule(A, [z, 1]).category()
     # Get computation times
     with open(filename, 'w') as f:
+        f.write('abscissa min max mean median stdev\n')
         for r in RANKS:
             phi = drinfeld_modules.random_object(r)
             get_samples(f, phi, n, r, d, 'r', is_isogeny)
@@ -174,24 +195,18 @@ def bench_rank(filename, is_isogeny):
 ###################
 
 
-def process(args):
-    (bench_function, is_isogeny, workdir, date) = args
+def call_bench_function(args):
+    (bench_function, is_isogeny) = args
     norm_or_charpoly = 'norm' if is_isogeny else 'charpoly'
-    file = Path(f'{date}.{norm_or_charpoly}.{bench_function.__name__}.txt')
-    bench_function(workdir / file, is_isogeny)
+    file = Path(f'{DATE}.{norm_or_charpoly}.{bench_function.__name__}.txt')
+    bench_function(WORKDIR / file, is_isogeny)
 
 
 if __name__ == '__main__':
 
     Fq = GF(5)
     A.<T> = Fq[]
-
-    workdir = Path.home() / Path('workshop/benchmarks/')
-    date = datetime.now().strftime('%H:%M:%S')
-
-    args = [(bench_function, is_isogeny, workdir, date)
-             for bench_function in [bench_tau_degree, bench_extension_degree, bench_rank]
-             for is_isogeny in [True, False]]
-    
+    bench_functions = [bench_tau_degree, bench_extension_degree, bench_rank]
+    # Parallelization: one core for each bench function/input:
     with Pool() as pool:
-        pool.map(process, args)
+        pool.map(call_bench_function, product(bench_functions, [True, False])
