@@ -152,7 +152,7 @@ def get_samples(f, phi, n, r, d, param, is_isogeny):
            f'{mean(samples)} '   \
            f'{median(samples)} ' \
            f'{stdev(samples)}\n'
-    logger.info(f'data: {data}')
+    logger.info(f'data [(n, d, r) = ({n}, {d}, {r}), param: {param}]: {data}')
     f.write(data)
             
             
