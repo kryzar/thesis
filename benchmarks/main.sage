@@ -60,19 +60,33 @@ def time_callable(callable):
 
 
 def find_endomorphism(phi, n):
+    """
+    Rapidly find an endomorphism of `phi` whose tau-degree is lesser
+    than `n`.
+    """
     end_ = End(phi)
-    if n <= 4:
+    if n <= 5:
         endomorphism = end_.random_element(n)
     else:
         endomorphism = end_(1)
-        basis_4 = end_.Fq_basis(4)
-        basis_5 = end_.Fq_basis(5)
-        basis_6 = end_.Fq_basis(6)
+        # Find the endomorphism with lowest tau-degree:
+        found_endo = False
+        min_deg = 4
+        while not found_endo:
+            basis_u = end_.Fq_basis(min_deg)
+            # Ensure the basis is not just the identity:
+            if len(basis_u) != 1:
+                found_endo = True
+            min_deg += 1
+        # Compute the remaining bases:
+        basis_v = end_.Fq_basis(min_deg + 1)
+        basis_w = end_.Fq_basis(min_deg + 2)
+        # Iteratively take random combinations of those endomorphisms:
         Fq = phi.function_ring().base()
         while endomorphism.ore_polynomial().degree() < n:
-            u = sum((Fq.random_element() * x for x in basis_4))
-            v = sum((Fq.random_element() * x for x in basis_5))
-            w = sum((Fq.random_element() * x for x in basis_6))
+            u = sum((Fq.random_element() * x for x in basis_u))
+            v = sum((Fq.random_element() * x for x in basis_v))
+            w = sum((Fq.random_element() * x for x in basis_w))
             endomorphism *= u * v + w
     return endomorphism
 
