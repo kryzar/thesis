@@ -20,15 +20,11 @@ set_random_seed(4808)
 #####################
 
 
-EXTENSION_DEGREES = [2, 3, 5, 10, 20, 30, 50, 100, 500]
-TAU_DEGREES       = [2, 3, 5, 10, 20, 30, 50, 100, 500] 
-RANKS             = [2, 3, 5, 10, 20, 30, 50, 100, 500]
+EXTENSION_DEGREES = [2, 3, 5, 10, 20, 30, 50, 100]
+TAU_DEGREES       = [2, 3, 5, 10, 20, 30, 50, 100] 
+RANKS             = [2, 3, 5, 10, 20, 30, 50, 100]
 
-# EXTENSION_DEGREES = [2, 5, 10, 20, 50, 100]
-# TAU_DEGREES       = [2, 5, 10, 20, 50, 100] 
-# RANKS             = [2, 5, 10, 20, 50, 100]
-
-DEFAULT_EXTENSION_DEGREE   = 15
+DEFAULT_EXTENSION_DEGREE   = 2
 DEFAULT_RANK               = 10
 DEFAULT_ISOGENY_TAU_DEGREE = 10
 
@@ -74,7 +70,9 @@ def find_endomorphism(phi, n):
         u = sum((Fq.random_element() * x for x in basis_u))
         v = sum((Fq.random_element() * x for x in basis_v))
         w = sum((Fq.random_element() * x for x in basis_w))
-        endomorphism *= u * v + w
+        u_v_w = u * v + w
+        if not u_v_w.is_zero():
+            endomorphism *= u_v_w
     return endomorphism
 
 
@@ -93,7 +91,8 @@ def find_isogeny(phi, n):
             (u, v) = (A.random_element(), A.random_element())
             ore_pol = psi(u).right_gcd(tau_K - psi(v))
             psi = psi.velu(ore_pol)
-            isogeny = ore_pol * isogeny
+            if not ore_pol.is_zero():
+                isogeny = ore_pol * isogeny
             assert not phi.is_isomorphic(psi)
             # logging.info(isogeny.degree())
         except:
