@@ -154,7 +154,6 @@ def get_samples(f, phi, n, r, d, param, is_isogeny):
            f'{stdev(samples)}'
     logger.info(f'data [(n, d, r) = ({n}, {d}, {r}), param: {param}]: {data}')
     f.write(data + '\n')
-            
 
 def bench_tau_degree(filename, is_isogeny):
     r = DEFAULT_RANK
