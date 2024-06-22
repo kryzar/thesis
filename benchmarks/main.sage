@@ -187,7 +187,7 @@ if __name__ == '__main__':
     Fq = GF(5)
     A.<T> = Fq[]
 
-    workdir = Path.home() / Path('workshop/benchmarks/tests')
+    workdir = Path.home() / Path('workshop/benchmarks/')
     date = datetime.now().strftime('%H:%M:%S')
 
     args = [(bench_function, is_isogeny, workdir, date)
