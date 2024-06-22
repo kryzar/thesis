@@ -1,7 +1,8 @@
-from pathlib import Path
 from datetime import datetime
-from time import time
+from multiprocessing import Pool
+from pathlib import Path
 from statistics import median
+from time import time
 import logging
 
 
@@ -19,23 +20,19 @@ set_random_seed(4808)
 #####################
 
 
-# EXTENSION_DEGREES = [2, 3, 10, 50, 100, 500, 1000]
-# TAU_DEGREES       = [2, 3, 10, 50, 100, 500, 1000] 
-# RANKS             = [2, 3, 10, 50, 100, 500, 1000]
+EXTENSION_DEGREES = [2, 3, 10, 50, 100, 500, 1000]
+TAU_DEGREES       = [2, 3, 10, 50, 100, 500, 1000] 
+RANKS             = [2, 3, 10, 50, 100, 500, 1000]
 
-# DEFAULT_EXTENSION_DEGREE   = 15
-# DEFAULT_RANK               = 10
-# DEFAULT_ISOGENY_TAU_DEGREE = 10
-
-EXTENSION_DEGREES = [2, 3]
-TAU_DEGREES       = [2, 3] 
-RANKS             = [2, 3]
+# EXTENSION_DEGREES = [2, 5, 10, 20, 50, 100]
+# TAU_DEGREES       = [2, 5, 10, 20, 50, 100] 
+# RANKS             = [2, 5, 10, 20, 50, 100]
 
 DEFAULT_EXTENSION_DEGREE   = 15
 DEFAULT_RANK               = 10
 DEFAULT_ISOGENY_TAU_DEGREE = 10
 
-NUMBER_SAMPLES = 2
+NUMBER_SAMPLES = 10
 
 
 ############################
@@ -173,6 +170,18 @@ def bench_rank(filename, is_isogeny):
             get_samples(f, phi, n, r, d, 'r', is_isogeny)
 
 
+###################
+# PARALLELIZATION #
+###################
+
+
+def process(args):
+    (bench_function, is_isogeny, workdir, date) = args
+    norm_or_charpoly = 'norm' if is_isogeny else 'charpoly'
+    file = Path(f'{date}.{norm_or_charpoly}.{bench_function.__name__}.txt')
+    bench_function(workdir / file, is_isogeny)
+
+
 if __name__ == '__main__':
 
     Fq = GF(5)
@@ -181,11 +190,9 @@ if __name__ == '__main__':
     workdir = Path.home() / Path('workshop/benchmarks/tests')
     date = datetime.now().strftime('%H:%M:%S')
 
-    for bench_function in [bench_tau_degree, bench_extension_degree, bench_rank]:
-        for is_isogeny in [True, False]:
-            norm_or_charpoly = 'norm' if is_isogeny else 'charpoly'
-            file = Path(f'{date}' \
-                        f'.{norm_or_charpoly}' \
-                        f'.{bench_function.__name__}' \
-                        f'.txt')
-            bench_function(workdir / file, is_isogeny)
+    args = [(bench_function, is_isogeny, workdir, date)
+             for bench_function in [bench_tau_degree, bench_extension_degree, bench_rank]
+             for is_isogeny in [True, False]]
+    
+    with Pool() as pool:
+        pool.map(process, args)
