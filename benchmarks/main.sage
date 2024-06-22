@@ -65,29 +65,20 @@ def find_endomorphism(phi, n):
     than `n`.
     """
     end_ = End(phi)
-    if n <= 5:
-        endomorphism = end_.random_element(n)
-    else:
-        endomorphism = end_(1)
-        # Find the endomorphism with lowest tau-degree:
-        found_endo = False
-        min_deg = 4
-        while not found_endo:
-            basis_u = end_.Fq_basis(min_deg)
-            # Ensure the basis is not just the identity:
-            if len(basis_u) != 1:
-                found_endo = True
-            min_deg += 1
-        # Compute the remaining bases:
-        basis_v = end_.Fq_basis(min_deg + 1)
-        basis_w = end_.Fq_basis(min_deg + 2)
-        # Iteratively take random combinations of those endomorphisms:
-        Fq = phi.function_ring().base()
-        while endomorphism.ore_polynomial().degree() < n:
-            u = sum((Fq.random_element() * x for x in basis_u))
-            v = sum((Fq.random_element() * x for x in basis_v))
-            w = sum((Fq.random_element() * x for x in basis_w))
-            endomorphism *= u * v + w
+    Fq = phi.function_ring().base()
+    # Compute bases of endomorphisms
+    min_deg = min(phi.rank(),
+                  phi.frobenius_endomorphism().ore_polynomial().degree())
+    basis_u = end_.Fq_basis(min_deg)
+    basis_v = end_.Fq_basis(min_deg + 1)
+    basis_w = end_.Fq_basis(min_deg + 2)
+    # Iteratively take random combinations of those endomorphisms:
+    endomorphism = end_(1)
+    while endomorphism.ore_polynomial().degree() < n:
+        u = sum((Fq.random_element() * x for x in basis_u))
+        v = sum((Fq.random_element() * x for x in basis_v))
+        w = sum((Fq.random_element() * x for x in basis_w))
+        endomorphism *= u * v + w
     return endomorphism
 
 
@@ -130,7 +121,7 @@ def get_samples(f, phi, n, r, d, param, is_isogeny):
     for sample_number in range(NUMBER_SAMPLES):
         logging.info(f'(n, r, d) = ({n}, {r}, {d})')
         logging.info(f'Param: {param}')
-        logging.info(f'Sample {sample_number+1} out of {NUMBER_SAMPLES}')
+        logging.info(f'Sample: {sample_number+1}/{NUMBER_SAMPLES}')
         logging.info(f'Starting {iso_or_endo} computation...')
         morphism = find_isogeny(phi, n) if is_isogeny else find_endomorphism(phi, n)
         logging.info(f'{iso_or_endo} computed.')
