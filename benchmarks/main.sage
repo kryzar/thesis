@@ -209,4 +209,4 @@ if __name__ == '__main__':
     bench_functions = [bench_tau_degree, bench_extension_degree, bench_rank]
     # Parallelization: one core for each bench function/input:
     with Pool() as pool:
-        pool.map(call_bench_function, product(bench_functions, [True, False])
+        pool.map(call_bench_function, product(bench_functions, [True, False]))
