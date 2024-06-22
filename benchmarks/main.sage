@@ -60,8 +60,7 @@ def time_callable(callable):
 
 
 def find_endomorphism(phi, n):
-    """
-    Rapidly find an endomorphism of `phi` whose tau-degree is lesser
+    """ Rapidly find an endomorphism of `phi` whose tau-degree is lesser
     than `n`.
     """
     end_ = End(phi)
@@ -129,7 +128,7 @@ def get_samples(f, phi, n, r, d, param, is_isogeny):
         logging.info(f'Starting {iso_or_endo} {norm_or_charpoly} computation...')
         computation_time = time_callable(callable)
         samples.append(computation_time)
-        logging.info(f'Isogeny norm computed ({computation_time}s).')
+        logging.info(f'{iso_or_endo} {norm_or_charpoly} computed ({computation_time}s).')
     # Write to a file
     match param:
         case 'n':
@@ -190,4 +189,3 @@ if __name__ == '__main__':
                         f'.{bench_function.__name__}' \
                         f'.txt')
             bench_function(workdir / file, is_isogeny)
-
