@@ -1,6 +1,6 @@
 from datetime import datetime
 from itertools import product
-from logging import FileHandler, Formatter, StreamHandler
+from logging import FileHandler, Formatter, StreamHandler, getLogger, INFO
 from multiprocessing import Pool
 from pathlib import Path
 from statistics import mean, median, stdev
@@ -15,13 +15,13 @@ from time import time
 DATE = datetime.now().strftime('%H:%M:%S')
 WORKDIR = Path.home() / Path('workshop/benchmarks/')
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+logger = getLogger()
+logger.setLevel(INFO)
 file_handler = FileHandler(WORKDIR / Path(f'{DATE}.log'))
 console_handler = StreamHandler()
 handlers = [file_handler, console_handler]
 for handler in handlers:
-    handler.setLevel(logging.INFO)
+    handler.setLevel(INFO)
     handler.setFormatter(Formatter('[%(asctime)s] %(message)s'))
     logger.addHandler(handler)
 
