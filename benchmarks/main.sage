@@ -12,7 +12,7 @@ from time import time
 ###########
 
 
-DATE = datetime.now().strftime('%H:%M:%S')
+DATE = datetime.now().strftime('%d-%m-%Y_%H:%M:%S')
 WORKDIR = Path.home() / Path('workshop/benchmarks/')
 
 logger = getLogger()
