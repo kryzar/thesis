@@ -1,4 +1,5 @@
 from datetime import datetime
+from hashlib import md5
 from itertools import product
 from logging import FileHandler, Formatter, StreamHandler, getLogger, INFO
 from multiprocessing import Pool
@@ -25,6 +26,10 @@ for handler in handlers:
     handler.setFormatter(Formatter('[%(asctime)s] %(message)s'))
     logger.addHandler(handler)
 
+def hash_id(var):
+    hasher = md5()
+    hasher.update(var.encode())
+    return hasher.hexdigest()[0:8]
 
 #####################
 # GLOBAL PARAMETERS #
@@ -129,7 +134,7 @@ def get_samples(f, phi, n, r, d, param, is_isogeny):
     norm_or_charpoly = 'norm'    if is_isogeny else 'charpoly'
     # Get samples
     samples = []
-    hash_ = hash(locals())
+    hash_ = hash_id(repr(locals()))
     for sample_number in range(NUMBER_SAMPLES):
         logger.info(f'[{hash_}] (n, r, d) = ({n}, {r}, {d})')
         logger.info(f'[{hash_}] Param: {param}')
