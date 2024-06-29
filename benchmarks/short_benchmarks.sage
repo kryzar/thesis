@@ -133,19 +133,20 @@ def get_samples(f, phi, n, r, d, param, is_isogeny):
     norm_or_charpoly = 'norm'    if is_isogeny else 'charpoly'
     # Get samples
     samples = []
-    hash_ = hash_id(repr(locals()))
+    big_hash = hash_id(repr(locals()))
     for sample_number in range(NUMBER_SAMPLES):
-        logger.info(f'[{hash_}] (n, r, d) = ({n}, {r}, {d})')
-        logger.info(f'[{hash_}] Param: {param}')
-        logger.info(f'[{hash_}] Sample: {sample_number+1}/{NUMBER_SAMPLES}')
-        logger.info(f'[{hash_}] Starting {iso_or_endo} computation...')
+        small_hash = hash_id(repr((locals(), sample_number)))
+        logger.info(f'[{big_hash}|{small_hash}] (n, r, d) = ({n}, {r}, {d})')
+        logger.info(f'[{big_hash}|{small_hash}] Param: {param}')
+        logger.info(f'[{big_hash}|{small_hash}] Sample: {sample_number+1}/{NUMBER_SAMPLES}')
+        logger.info(f'[{big_hash}|{small_hash}] Starting {iso_or_endo} computation...')
         morphism = find_isogeny(phi, n) if is_isogeny else find_endomorphism(phi, n)
-        logger.info(f'[{hash_}] {iso_or_endo} computed.')
+        logger.info(f'[{big_hash}|{small_hash}] {iso_or_endo} computed.')
         callable = morphism.norm if is_isogeny else morphism.charpoly
-        logger.info(f'[{hash_}] Starting {iso_or_endo} {norm_or_charpoly} computation...')
+        logger.info(f'[{big_hash}|{small_hash}] Starting {iso_or_endo} {norm_or_charpoly} computation...')
         computation_time = time_callable(callable)
         samples.append(computation_time)
-        logger.info(f'[{hash_}] {iso_or_endo} {norm_or_charpoly} computed ({computation_time}s).')
+        logger.info(f'[{big_hash}|{small_hash}] {iso_or_endo} {norm_or_charpoly} computed ({computation_time}s).')
     # Write to a file
     match param:
         case 'n':
@@ -160,7 +161,7 @@ def get_samples(f, phi, n, r, d, param, is_isogeny):
            f'{mean(samples)} '   \
            f'{median(samples)} ' \
            f'{stdev(samples)}'
-    logger.info(f'[{hash_}] data [(n, d, r) = ({n}, {d}, {r}), param: {param}]: {data}')
+    logger.info(f'[{big_hash}] data [(n, d, r) = ({n}, {d}, {r}), param: {param}]: {data}')
     f.write(data + '\n')
 
 def bench_tau_degree(filename, is_isogeny):
