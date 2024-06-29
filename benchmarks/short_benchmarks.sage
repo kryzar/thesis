@@ -41,8 +41,7 @@ set_random_seed(4808)
 RANGES =   list(range(1, 10)) \
          + list(range(10, 20, 2)) \
          + list(range(20, 50, 5)) \
-         + list(range(50, 100, 10)) \
-         + list(range(100, 200, 20))
+         + list(range(50, 100, 10))
 
 EXTENSION_DEGREES = RANGES
 TAU_DEGREES       = RANGES
@@ -52,7 +51,7 @@ DEFAULT_EXTENSION_DEGREE   = 15
 DEFAULT_RANK               = 10
 DEFAULT_ISOGENY_TAU_DEGREE = 10
 
-NUMBER_SAMPLES = 10
+NUMBER_SAMPLES = 20
 
 
 ############################
