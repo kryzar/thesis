@@ -140,7 +140,7 @@ def get_samples(f, phi, n, r, d, param, is_isogeny):
         logger.info(f'[{hash_}] Sample: {sample_number+1}/{NUMBER_SAMPLES}')
         logger.info(f'[{hash_}] Starting {iso_or_endo} computation...')
         morphism = find_isogeny(phi, n) if is_isogeny else find_endomorphism(phi, n)
-        logger.info(f'{iso_or_endo} computed.')
+        logger.info(f'[{hash_}] {iso_or_endo} computed.')
         callable = morphism.norm if is_isogeny else morphism.charpoly
         logger.info(f'[{hash_}] Starting {iso_or_endo} {norm_or_charpoly} computation...')
         computation_time = time_callable(callable)
