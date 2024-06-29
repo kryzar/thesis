@@ -41,7 +41,7 @@ set_random_seed(4808)
 RANGES =   list(range(1, 10)) \
          + list(range(10, 20, 2)) \
          + list(range(20, 50, 5)) \
-         + list(range(50, 100, 10))
+         + list(range(50, 110, 10))
 
 EXTENSION_DEGREES = RANGES
 TAU_DEGREES       = RANGES
