@@ -79,7 +79,7 @@ git clone -c core.symlinks=true --filter blob:none \
 cd sage
 make configure
 ./configure
-make -j64  # Parallelize on 64 processors
+make build -j64  # Parallelize on 64 processors
 ```
 Once this has finished, run:
 
@@ -88,4 +88,7 @@ Once this has finished, run:
 ```
 
 > [!TIP]
-> As per [the installation guide](https://github.com/sagemath/sage), we highly recommend parallelizing the build process. This can be achieved by running `make -jN` (where `N` is the number of processors); for example, `make -j64` builds on 64 parallel processors, while `make -j8` builds on 8 parallels processors.
+> As per [the installation guide](https://github.com/sagemath/sage), we highly recommend parallelizing the build process. This can be achieved by running `make build -jN` (where `N` is the number of processors); for example, `make build -j64` builds on 64 parallel processors, while `make build -j8` builds on 8 parallels processors.
+
+> [!NOTE]
+> The command `make build` does not compile the whole SageMath suite, but only the main executable. For instance, the documentation is not built. This saves significant time, as well as space.

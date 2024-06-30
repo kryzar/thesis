@@ -12,6 +12,6 @@ WORKDIR /sage
 RUN sudo make configure
 RUN sudo env
 RUN sudo ./configure --enable-build-as-root
-RUN sudo make -j64
+RUN sudo make build -j64
 
 ENTRYPOINT ["/sage/sage"]
