@@ -38,15 +38,15 @@ def hash_id(var):
 
 set_random_seed(4808)
 
-EXTENSION_DEGREES = [1, 2, 3, 5, 10, 20, 30, 50, 100]
-TAU_DEGREES       = [1, 2, 3, 5, 10, 20, 30, 50, 100]
-RANKS             = [1, 2, 3, 5, 10, 20, 30, 50, 100]
+EXTENSION_DEGREES = [2, 3, 5, 10, 20, 30, 50, 100]
+TAU_DEGREES       = [2, 3, 5, 10, 20, 30, 50, 100]
+RANKS             = [2, 3, 5, 10, 20, 30, 50, 100]
 
 DEFAULT_EXTENSION_DEGREE   = 15
 DEFAULT_RANK               = 10
 DEFAULT_ISOGENY_TAU_DEGREE = 10
 
-NUMBER_SAMPLES = 20
+NUMBER_SAMPLES = 10
 
 
 ############################
