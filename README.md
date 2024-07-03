@@ -1,6 +1,8 @@
 # Support repository for my PhD thesis
 
-## SageMath
+## Running SageMath
+
+We explain how to run the SageMath version of the thesis.
 
 ### Run SageMath from the already built Docker Hub image
 
@@ -92,3 +94,10 @@ Once this has finished, run:
 
 > [!NOTE]
 > The command `make build` does not compile the whole SageMath suite, but only the main executable. For instance, the documentation is not built. This saves significant time, as well as space.
+
+## Running benchmarks
+
+We give the code for two classes of benchmarks:
+- The benchmarks of Chapters 4 and 5. The code is available in [benchmarks/chapters-4-5](benchmarks/chapters-4-5). To reproduce our tests, run the module `benchmarks.sage` with an appropriate version of SageMath. The results as well as the console logs are written in various files; the global variable `WORKDIR` (line 17) should therefore be set to an appropriate value. We have fixed the random seed so that the exact same random isogenies and endomorphisms are used.
+- The benchmarks of Chapter 6. The code is available in [benchmarks/chapter-6](benchmarks/chapter-6). These were originally written by [Xavier Caruso](https://xavier.caruso.ovh/) (@xcaruso) for the Software Presentation [*Drinfeld Modules in SageMath*](https://dl.acm.org/doi/10.1145/3614408.3614417) (ACM Communications in Computer Algebra, Volume 57, Issue 2, 2023).
+
