@@ -245,7 +245,7 @@ def call_bench_function(args):
     """
     (bench_function, is_isogeny) = args
     norm_or_charpoly = 'norm' if is_isogeny else 'charpoly'
-    file = Path(f'pauvretartine-encorepire.{DATE}.{norm_or_charpoly}.{bench_function.__name__}.txt')
+    file = Path(f'encorepire.{DATE}.{norm_or_charpoly}.{bench_function.__name__}.txt')
     bench_function(WORKDIR / file, is_isogeny)
 
 
