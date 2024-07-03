@@ -1,7 +1,8 @@
 # Support repository for my PhD thesis
 
-This is the support repository for my PhD thesis. We explain [how to get the
-SageMath version we use in our thesis](#running-sagemath), and [how to run our benchmarks](#running-benchmarks).
+This is the support repository for my PhD thesis. We explain:
+- [how to get the SageMath version we use in our thesis](#running-sagemath);
+- [how to run our benchmarks](#running-benchmarks).
 
 ## Running SageMath
 
