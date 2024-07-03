@@ -42,10 +42,10 @@ def hash_id(var):
 
 set_random_seed(4808)
 
-DEFAULT_RANGE =   list(range(2, 10))
-                + list(range(10, 20, 2))
-                + list(range(20, 50, 5))
-                + list(range(50, 100, 10))
+DEFAULT_RANGE =   list(range(2, 10)) \
+                + list(range(10, 20, 2)) \
+                + list(range(20, 50, 5)) \
+                + list(range(50, 100, 10)) \
                 + [200, 300, 500, 1000]
 
 EXTENSION_DEGREES = DEFAULT_RANGE
