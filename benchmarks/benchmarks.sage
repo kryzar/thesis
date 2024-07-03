@@ -27,6 +27,10 @@ for handler in handlers:
     logger.addHandler(handler)
 
 def hash_id(var):
+    """
+    Return a hash of the input `var`. This is useful to log computations
+    done in parallel, as the logging messages would be mixed.
+    """
     hasher = md5()
     hasher.update(var.encode())
     return hasher.hexdigest()[0:8]
@@ -57,7 +61,7 @@ NUMBER_SAMPLES = 10
 def time_callable(callable):
     """
     Return the time require to call `callable`, which is typically
-    a function, e.g. `phi.frobenius_charpoly`.
+    a function like `phi.frobenius_charpoly`.
     """
     start = time()
     callable()
@@ -71,8 +75,12 @@ def time_callable(callable):
 
 
 def find_endomorphism(phi, n):
-    """ Rapidly find an endomorphism of `phi` whose tau-degree is lesser
-    than `n`.
+    """
+    Find an endomorphism with tau-degree `n` from the input `phi` to
+    some other Drinfeld module `psi`. We first compute bases of
+    endomorphisms with small tau-degree (using the `Fq_basis` method
+    implemented by Musleh), and obtain the desired
+    endomorphism as a combination of random elements of these bases.
     """
     end_ = End(phi)
     Fq = phi.function_ring().base()
@@ -96,11 +104,15 @@ def find_endomorphism(phi, n):
 
 def find_isogeny(phi, n):
     """
-    Being given a Drinfeld module `phi` and an integer `n`, find an
-    isogeny from `phi` to another Drinfeld module that is not
-    isomorphic to `phi`.
-    """
+    Find an isogeny with tau-degree `n` from the input `phi` to some
+    other Drinfeld module `psi`. We ensure that the isogeny is not an
+    endomorphism. The isogeny is computed as a product of small
+    isogenies of the form
 
+        rgcg(phi_u, tau_K - phi_v),
+
+    following the ideas of Chapter 7 of the thesis.
+    """
     tau_K = phi.frobenius_endomorphism().ore_polynomial()
     isogeny = phi.ore_polring()(1)
     psi = phi
@@ -124,6 +136,17 @@ def find_isogeny(phi, n):
 
 
 def get_samples(f, phi, n, r, d, param, is_isogeny):
+    """
+    Compute `NUMBER_SAMPLES` norms of isogenies or characteristic
+    polynomial of endomorphisms, get statistics on computation times
+    (min., max., average, median, standard deviation), and write
+    the result to the input file. If the boolean `is_isogeny`
+    is true, the present function automatically computes random
+    isogenies and their norms; otherwise, the function does so
+    for endomorphisms and their characteristic polynomials.
+    Most steps (computation of the morphism, and its invariant) are
+    logged.
+    """
     iso_or_endo      = 'isogeny' if is_isogeny else 'endomorphism'
     norm_or_charpoly = 'norm'    if is_isogeny else 'charpoly'
     # Get samples
@@ -131,14 +154,19 @@ def get_samples(f, phi, n, r, d, param, is_isogeny):
     big_hash = hash_id(repr(locals()))
     for sample_number in range(NUMBER_SAMPLES):
         small_hash = hash_id(repr((locals(), sample_number)))
+        # Lots of logging
         logger.info(f'[{big_hash}|{small_hash}] (n, r, d) = ({n}, {r}, {d})')
         logger.info(f'[{big_hash}|{small_hash}] Param: {param}')
         logger.info(f'[{big_hash}|{small_hash}] Sample: {sample_number+1}/{NUMBER_SAMPLES}')
         logger.info(f'[{big_hash}|{small_hash}] Starting {iso_or_endo} computation...')
+        # Compute an isogeny or an endomorphism, depending on
+        # `is_isogeny`
         morphism = find_isogeny(phi, n) if is_isogeny else find_endomorphism(phi, n)
         logger.info(f'[{big_hash}|{small_hash}] {iso_or_endo} computed.')
+        # Get the function to be called
         callable = morphism.norm if is_isogeny else morphism.charpoly
         logger.info(f'[{big_hash}|{small_hash}] Starting {iso_or_endo} {norm_or_charpoly} computation...')
+        # Call the function and store its computation time
         computation_time = time_callable(callable)
         samples.append(computation_time)
         logger.info(f'[{big_hash}|{small_hash}] {iso_or_endo} {norm_or_charpoly} computed ({computation_time}s).')
@@ -202,6 +230,13 @@ def bench_rank(filename, is_isogeny):
 
 
 def call_bench_function(args):
+    """
+    This function allows to call a bench function in a 
+
+        with Pool() as pool:
+
+    block.
+    """
     (bench_function, is_isogeny) = args
     norm_or_charpoly = 'norm' if is_isogeny else 'charpoly'
     file = Path(f'{DATE}.{norm_or_charpoly}.{bench_function.__name__}.txt')
