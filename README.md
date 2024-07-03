@@ -1,5 +1,8 @@
 # Support repository for my PhD thesis
 
+This is the support repository for my PhD thesis. We explain [how to get the
+SageMath version we use in our thesis](#running-sagemath), and [how to run our benchmarks](#running-benchmarks).
+
 ## Running SageMath
 
 We explain how to run the SageMath version of the thesis.
@@ -98,6 +101,6 @@ Once this has finished, run:
 ## Running benchmarks
 
 We give the code for two classes of benchmarks:
-- The benchmarks of Chapters 4 and 5. The code is available in [benchmarks/chapters-4-5](benchmarks/chapters-4-5). To reproduce our tests, run the module `benchmarks.sage` with an appropriate version of SageMath. The results as well as the console logs are written in various files; the global variable `WORKDIR` (line 17) should therefore be set to an appropriate value. We have fixed the random seed so that the exact same random isogenies and endomorphisms are used.
-- The benchmarks of Chapter 6. The code is available in [benchmarks/chapter-6](benchmarks/chapter-6). These were originally written by [Xavier Caruso](https://xavier.caruso.ovh/) (@xcaruso) for the Software Presentation [*Drinfeld Modules in SageMath*](https://dl.acm.org/doi/10.1145/3614408.3614417) (ACM Communications in Computer Algebra, Volume 57, Issue 2, 2023).
+- The benchmarks of Chapters 4 and 5. The code is available in [benchmarks/chapters-4-5](benchmarks/chapters-4-5). To reproduce our tests, run the module `benchmarks.sage` with an appropriate version of SageMath. The results as well as the console logs are written to various files; the global variable `WORKDIR` (line 17) should therefore be set to an appropriate value. We have fixed the random seed so that the exact same random isogenies and endomorphisms are used.
+- The benchmarks of Chapter 6. The code is available in [benchmarks/chapter-6](benchmarks/chapter-6). These were originally written by [Xavier Caruso](https://xavier.caruso.ovh/) ([@xcaruso](https://github.com/xcaruso)) for the Software Presentation [*Drinfeld Modules in SageMath*](https://dl.acm.org/doi/10.1145/3614408.3614417) (ACM Communications in Computer Algebra, Volume 57, Issue 2, 2023).
 
