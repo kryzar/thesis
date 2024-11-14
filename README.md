@@ -1,6 +1,6 @@
 # Support repository for my PhD thesis
 
-This is the support repository for my PhD thesis. We explain:
+This is the support repository for my [PhD thesis](thesis.pdf). We explain:
 - [how to get the SageMath version we use in our thesis](#running-sagemath);
 - [how to run our benchmarks](#running-benchmarks).
 
